@@ -1,0 +1,44 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: familie-ef-veiviser
+  namespace: teamfamilie
+  labels:
+    team: teamfamilie
+spec:
+  image: navikt/familie-ef-veiviser:{{version}}
+  team: teamfamilie
+  port: 8080
+  ingresses:
+    - https://familie.dev-nav.no/alene-med-barn/veiviser
+  liveness:
+    path: /familie/alene-med-barn/veiviser/
+  readiness:
+    path: /familie/alene-med-barn/veiviser/
+  prometheus:
+    enabled: false
+  replicas:
+    min: 1
+    max: 2
+    cpuThresholdPercentage: 50
+  accessPolicy:
+    outbound:
+      external:
+        - host: appres-q0.nav.no
+        - host: loginservice-q.nav.no
+        - host: unleashproxy.nais.oera.no
+  env:
+    - name: APP_VERSION
+      value: '{{version}}'
+    - name: APPRES_CMS_URL
+      value: https://appres-q0.nav.no
+    - name: LOGINSERVICE_URL
+      value: https://loginservice-q.nav.no/login
+    - name: UNLEASH_API_URL
+      value: https://unleashproxy.nais.oera.no/api/
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 1024Mi
+    requests:
+      memory: 512Mi

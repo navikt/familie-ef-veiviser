@@ -1,13 +1,4 @@
 version: 2.1
-orbs:
-  nais: 'navikt/nais-deployment@1.1.0'
-
-executors:
-  nais-deployer:
-    environment:
-      TEAM: teamfamilie
-    docker:
-      - image: navikt/deployment-cli:latest
 
 jobs:
   build:
@@ -77,7 +68,8 @@ jobs:
             - properties.env
 
   deploy_dev:
-    executor: nais-deployer
+    docker:
+      - image: navikt/deployment:v1
     steps:
       - attach_workspace:
           at: /home/circleci/project
@@ -88,16 +80,18 @@ jobs:
       - run:
           name: Create github deployment for stable test
           command: |
-            deployment-cli deploy create \
-            --cluster=dev-sbs \
-            --repository=$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME \
-            --appid=${GITHUB_APP_ID} \
-            --key-base64=${GITHUB_PRIVATE_KEY} \
-            --team=${TEAM} \
-            --version=${VERSION} \
-            --resource=./nais-dev.yaml
+            source $BASH_ENV
+            /app/deploy \
+            --apikey="$NAIS_DEPLOY_APIKEY" \
+            --cluster=dev-gcp \
+            --owner=$CIRCLE_PROJECT_USERNAME \
+            --repository=$CIRCLE_PROJECT_REPONAME \
+            --var=version="${VERSION}" \
+            --resource=./gcp-nais-dev.yaml
+
   deploy_prod:
-    executor: nais-deployer
+    docker:
+      - image: navikt/deployment:v1
     steps:
       - attach_workspace:
           at: /home/circleci/project
@@ -108,14 +102,14 @@ jobs:
       - run:
           name: Create github deployment for stable test
           command: |
-            deployment-cli deploy create \
-            --cluster=prod-sbs \
-            --repository=$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME \
-            --appid=${GITHUB_APP_ID} \
-            --key-base64=${GITHUB_PRIVATE_KEY} \
-            --team=${TEAM} \
-            --version=${VERSION} \
-            --resource=./nais-prod.yaml
+            source $BASH_ENV
+            /app/deploy \
+            --apikey="$NAIS_DEPLOY_APIKEY" \
+            --cluster=prod-gcp \
+            --owner=$CIRCLE_PROJECT_USERNAME \
+            --repository=$CIRCLE_PROJECT_REPONAME \
+            --var=version="$VERSION" \
+            --resource=./gcp-nais-prod.yaml
 workflows:
   version: 2
   build_n_deploy:
