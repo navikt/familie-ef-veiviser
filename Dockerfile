@@ -1,13 +1,21 @@
-FROM navikt/node-express:18
+FROM gcr.io/distroless/nodejs:18
 
-WORKDIR /var/server
+USER root
+user apprunner
+ENV TZ="Europe/Oslo"
 
-COPY dist ./dist
-COPY index.html ./index.html
-COPY ./src/backend/server.js ./server.js
+WORKDIR /app
 
-ADD ./ /var/server/
+ADD src/backend ./src/backend
+ADD src/components ./src/components
+ADD src/models ./src/models
+ADD src/utils ./src/utils
+
+ADD node_modules ./node_modules
+ADD package.json ./
+ADD build ./build
+
+ENV NODE_ENV production
 
 EXPOSE 8080
-
-CMD ["node", "server.js"]
+CMD ["--es-module-specifier-resolution=node", "/app/src/backend/server.js"]
