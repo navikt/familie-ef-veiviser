@@ -21,6 +21,7 @@ import {
   Spørsmålstekst,
 } from './SpørsmålElementer';
 import { logSpørsmålBesvart } from '../../utils/amplitude';
+import { ordetNavIStoreBokstaverSkalKunStarteMedStorBokstav } from '../../utils/tekst';
 
 interface ISpørsmålProps {
   steg: number;
@@ -113,7 +114,9 @@ const Spørsmål: React.FC<ISpørsmålProps> = ({
               <div ref={nesteSpørsmål} />
             ) : null}
             <Spørsmålstekst id={spørsmål.sporsmal_tekst}>
-              {spørsmål.sporsmal_tekst}
+              {ordetNavIStoreBokstaverSkalKunStarteMedStorBokstav(
+                spørsmål.sporsmal_tekst
+              )}
             </Spørsmålstekst>
             {spørsmål &&
             spørsmål.hjelpetekst_overskrift &&
@@ -136,7 +139,9 @@ const Spørsmål: React.FC<ISpørsmålProps> = ({
                         klikkPåSvar(spørsmål, svar, true)
                       }
                     >
-                      {svar.tekst}
+                      {ordetNavIStoreBokstaverSkalKunStarteMedStorBokstav(
+                        svar.tekst
+                      )}
                     </Radio>
                   </RadioknappWrapper>
                 );

@@ -2,6 +2,7 @@ import React from 'react';
 import { IUndertittel, IBrodtekst } from '../../models/Informasjonsboks';
 import MarkdownViewer from '../utils/MarkdownViewer';
 import { Heading } from '@navikt/ds-react';
+import { ordetNavIStoreBokstaverSkalKunStarteMedStorBokstav } from '../../utils/tekst';
 
 interface IUndertitlerPanelProps {
   undertitler: IUndertittel[];
@@ -21,10 +22,10 @@ const UndertitlerPanel: React.FC<IUndertitlerPanelProps> = ({
   const undertittelClass = className
     ? className
     : !undertitlerIPanel.length
-    ? 'bare-brodtekst'
-    : antall_undertitler_totalt && antall_undertitler_totalt > 1
-    ? 'undertittel-flere'
-    : 'undertittel-singel';
+      ? 'bare-brodtekst'
+      : antall_undertitler_totalt && antall_undertitler_totalt > 1
+        ? 'undertittel-flere'
+        : 'undertittel-singel';
 
   const undertitlerMedInnhold = undertitler.filter(
     (undertittel) =>
@@ -64,7 +65,12 @@ const UndertitlerPanel: React.FC<IUndertitlerPanelProps> = ({
                       }
                       key={i}
                     >
-                      <MarkdownViewer key={i} markdown={brodtekst.body} />
+                      <MarkdownViewer
+                        key={i}
+                        markdown={ordetNavIStoreBokstaverSkalKunStarteMedStorBokstav(
+                          brodtekst.body
+                        )}
+                      />
                     </div>
                   );
                 }
